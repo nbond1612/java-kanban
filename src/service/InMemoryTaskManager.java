@@ -5,17 +5,21 @@ import model.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final HashMap<Integer, Task> tasks = new HashMap<>();
-    private final HashMap<Integer, Epic> epics = new HashMap<>();
-    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    private final Map<Integer, Task> tasks;
+    private final Map<Integer, Epic> epics;
+    private final Map<Integer, Subtask> subtasks;
 
     private final HistoryManager historyManager;
 
     public InMemoryTaskManager(HistoryManager historyManager) {
         this.historyManager = historyManager;
+        this.tasks = new HashMap<>();
+        this.epics = new HashMap<>();
+        this.subtasks = new HashMap<>();
     }
 
     private int seq = 0;
@@ -53,26 +57,29 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTask(int id) {
+        Task task = tasks.get(id);
         if (tasks.containsKey(id)) {
-            historyManager.add(tasks.get(id));
+            historyManager.add(task);
         }
-        return tasks.get(id);
+        return task;
     }
 
     @Override
     public Epic getEpic(int id) {
+        Epic epic = epics.get(id);
         if (epics.containsKey(id)) {
-            historyManager.add(epics.get(id));
+            historyManager.add(epic);
         }
-        return epics.get(id);
+        return epic;
     }
 
     @Override
     public Subtask getSubtask(int id) {
+        Subtask subtask = subtasks.get(id);
         if (subtasks.containsKey(id)) {
-            historyManager.add(subtasks.get(id));
+            historyManager.add(subtask);
         }
-        return subtasks.get(id);
+        return subtask;
     }
 
     @Override

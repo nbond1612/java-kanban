@@ -4,19 +4,33 @@ import model.*;
 import model.TaskStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Менеджер задач")
 class InMemoryTaskManagerTest {
+    InMemoryTaskManager taskManager;
+    Task task;
+    Task task1;
+    Task task2;
+    Epic epic;
+    Subtask subtask;
+
+    @BeforeEach
+    public void beforeEach() {
+        taskManager = new InMemoryTaskManager(new InMemoryHistoryManager());
+        task = new Task("Задача", TaskStatus.NEW, "Описание");
+        task1 = new Task("Задача1", TaskStatus.NEW, "Описание1");
+        task2 = new Task("Задача2", TaskStatus.DONE, "Описание2");
+        epic = new Epic("Эпик", "Описание");
+        subtask = new Subtask("Подзадача", TaskStatus.NEW, "Описание", 2);
+    }
 
     @Test
     @DisplayName("Задачи с заданным id и сгенерированным id не конфликтуют внутри менеджера")
     public void shouldNotHaveConflictBetweenManuallyAndAutomaticallyAssignedId() {
-        InMemoryTaskManager taskManager = new InMemoryTaskManager(new InMemoryHistoryManager());
-        Task task1 = new Task("Задача1", TaskStatus.NEW, "Описание1");
         taskManager.createTask(task1);
 
-        Task task2 = new Task("Задача2", TaskStatus.DONE, "Описание2");
         taskManager.createTask(task2);
         task2.setId(1);
 
@@ -28,11 +42,6 @@ class InMemoryTaskManagerTest {
     @Test
     @DisplayName("InMemoryTaskManager действительно добавляет задачи разного типа и может найти их по id")
     public void shouldBeFunctional() {
-        InMemoryTaskManager taskManager = new InMemoryTaskManager(new InMemoryHistoryManager());
-        Task task = new Task("Задача", TaskStatus.NEW, "Описание");
-        Epic epic = new Epic("Эпик", "Описание");
-        Subtask subtask = new Subtask("Подзадача", TaskStatus.NEW, "Описание", 2);
-
         taskManager.createTask(task);
         taskManager.createEpic(epic);
         taskManager.createSubtask(subtask);

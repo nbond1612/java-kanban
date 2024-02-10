@@ -1,10 +1,15 @@
 package service;
 
 import java.util.ArrayList;
+import java.util.List;
 import model.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private final ArrayList<Task> lastViewed = new ArrayList<>();
+    private final List<Task> lastViewed;
+
+    public InMemoryHistoryManager() {
+        this.lastViewed = new ArrayList<>();
+    }
 
     @Override
     public void add(Task task) {
@@ -17,7 +22,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public ArrayList<Task> getHistory() {
+    public List<Task> getHistory() {
         return lastViewed;
     }
 

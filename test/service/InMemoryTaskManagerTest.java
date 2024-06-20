@@ -1,7 +1,6 @@
 package service;
 
 import model.*;
-import model.TaskStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +17,7 @@ class InMemoryTaskManagerTest {
 
     @BeforeEach
     public void beforeEach() {
-        taskManager = new InMemoryTaskManager(new InMemoryHistoryManager());
+        taskManager = new InMemoryTaskManager();
         task = new Task("Задача", TaskStatus.NEW, "Описание");
         task1 = new Task("Задача1", TaskStatus.NEW, "Описание1");
         task2 = new Task("Задача2", TaskStatus.DONE, "Описание2");

@@ -1,6 +1,6 @@
 package service;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
 import model.*;
@@ -19,9 +19,9 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    HashMap<Integer, Node> history = new HashMap<>();
-    Node first;
-    Node last;
+    private final HashMap<Integer, Node> history = new HashMap<>();
+    private Node first;
+    private Node last;
 
     @Override
     public void add(Task task) {
@@ -35,7 +35,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public List<Task> getHistory() {
-        List<Task> list = new ArrayList<>();
+        List<Task> list = new LinkedList<>();
         Node node = first;
         while (node != null) {
             list.add(node.task);
@@ -50,6 +50,15 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (history.containsKey(id)) {
             Node node = history.get(id);
             removeNode(node);
+        }
+    }
+
+    @Override
+    public void clearHistory() {
+        Node node = first;
+        while (node != null) {
+            removeNode(node);
+            node = node.next;
         }
     }
 
@@ -75,19 +84,18 @@ public class InMemoryHistoryManager implements HistoryManager {
                 last = null;
             }
         }
-        // prevNode.next = nextNode;
-        // nextNode.prev = prevNode;
     }
 
     private Node linkLast(Task task) {
-        final Node l = last;
-        final Node newNode = new Node(l, task, null);
-        last = newNode;
-        if (l == null) {
+        final Node newNode = new Node(last, task, null);
+
+        if (last == null) {
             first = newNode;
         } else {
-            l.next = newNode;
+            last.next = newNode;
         }
+        last = newNode;
+
         return newNode;
     }
 

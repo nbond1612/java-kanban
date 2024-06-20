@@ -57,4 +57,15 @@ class InMemoryHistoryManagerTest {
 
         assertEquals(manager.getHistory(), List.of(task, task2), "Должна удаляться задача в конце истории!");
     }
+
+    @Test
+    @DisplayName("Функция очистки истории работает")
+    public void shouldClearHistory() {
+        manager.add(task);
+        manager.add(task1);
+        manager.add(task2);
+
+        manager.clearHistory();
+        assertEquals(manager.getHistory(), List.of(), "История должна очищаться!");
+    }
 }

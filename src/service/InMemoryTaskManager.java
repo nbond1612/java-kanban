@@ -184,7 +184,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllSubtasks() {
         subtasks.clear();
-        for(Epic epic: epics.values()) {
+        for (Epic epic: epics.values()) {
             epic.setSubTasks(new ArrayList<>());
             calculateEpicStatus(epic);
         }

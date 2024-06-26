@@ -9,9 +9,9 @@ import java.util.Map;
 import java.util.Objects;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final Map<Integer, Task> tasks;
-    private final Map<Integer, Epic> epics;
-    private final Map<Integer, Subtask> subtasks;
+    protected final Map<Integer, Task> tasks;
+    protected final Map<Integer, Epic> epics;
+    protected final Map<Integer, Subtask> subtasks;
 
     private final HistoryManager historyManager;
 
@@ -22,7 +22,7 @@ public class InMemoryTaskManager implements TaskManager {
         this.subtasks = new HashMap<>();
     }
 
-    private int seq = 0;
+    protected int seq = 0;
 
     private int generateId() {
         return ++seq;

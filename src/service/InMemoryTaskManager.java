@@ -15,8 +15,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     private final HistoryManager historyManager;
 
-    public InMemoryTaskManager(HistoryManager historyManager) {
-        this.historyManager = historyManager;
+    public InMemoryTaskManager() {
+        this.historyManager = Managers.getDefaultHistory();
         this.tasks = new HashMap<>();
         this.epics = new HashMap<>();
         this.subtasks = new HashMap<>();
@@ -141,14 +141,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTask(int id) {
+        historyManager.remove(id);
         tasks.remove(id);
     }
 
     @Override
     public void deleteEpic(int id) {
         if (epics.containsKey(id)) {
+            historyManager.remove(id);
             Epic epic = epics.remove(id);
             for (int subtaskId : epic.getSubTasks()) {
+                historyManager.remove(subtaskId);
                 subtasks.remove(subtaskId);
             }
         }
@@ -161,6 +164,7 @@ public class InMemoryTaskManager implements TaskManager {
 
             Epic epic = epics.get(removedSubtask.getEpic());
 
+            historyManager.remove(id);
             epic.removeSubtask(id);
             calculateEpicStatus(epic);
         }
@@ -168,19 +172,31 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {
+        for (Integer taskId: tasks.keySet()) {
+            historyManager.remove(taskId);
+        }
         tasks.clear();
     }
 
     @Override
     public void deleteAllEpics() {
+        for (Integer epicId: epics.keySet()) {
+            historyManager.remove(epicId);
+        }
+        for (Integer subtaskId: subtasks.keySet()) {
+            historyManager.remove(subtaskId);
+        }
         epics.clear();
         subtasks.clear();
     }
 
     @Override
     public void deleteAllSubtasks() {
+        for (Integer subtaskId: subtasks.keySet()) {
+            historyManager.remove(subtaskId);
+        }
         subtasks.clear();
-        for(Epic epic: epics.values()) {
+        for (Epic epic: epics.values()) {
             epic.setSubTasks(new ArrayList<>());
             calculateEpicStatus(epic);
         }

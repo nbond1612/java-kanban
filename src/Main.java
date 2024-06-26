@@ -1,4 +1,3 @@
-import service.InMemoryHistoryManager;
 import service.InMemoryTaskManager;
 import service.TaskManager;
 import model.*;
@@ -8,7 +7,7 @@ public class Main {
         System.out.println("Проверка.");
         System.out.println();
 
-        TaskManager taskManager = new InMemoryTaskManager(new InMemoryHistoryManager());
+        TaskManager taskManager = new InMemoryTaskManager();
         Task task1 = taskManager.createTask(new Task("Задача 1", TaskStatus.NEW, "Описание"));
         Task task2 = taskManager.createTask(new Task("Задача 2", TaskStatus.IN_PROGRESS, "Описание"));
 
@@ -51,15 +50,27 @@ public class Main {
         System.out.println("Проверяем статус эпика: " + taskManager.getEpic(subtask1.getEpic()));
 
         System.out.println();
+        System.out.println("Проверка вывода истории:");
+        System.out.println(taskManager.getHistory());
+
+        System.out.println();
         taskManager.deleteTask(task1.getId());
         System.out.println("Удалили задачу 1: " + task1);
         System.out.println("Проверяем список задач:" + taskManager.getAllTasks());
+
+        System.out.println();
+        System.out.println("Проверка вывода истории:");
+        System.out.println(taskManager.getHistory());
 
         System.out.println();
         taskManager.deleteSubtask(subtask1.getId());
         System.out.println("Удалили подзадачу 1: " + subtask1);
         System.out.println("Проверяем список подзадач: " + taskManager.getAllSubtasks());
         System.out.println("Проверяем список подзадач эпика 1: " + taskManager.getAllSubtasksInEpic(subtask1.getEpic()));
+
+        System.out.println();
+        System.out.println("Проверка вывода истории:");
+        System.out.println(taskManager.getHistory());
 
         System.out.println();
         taskManager.deleteEpic(epic1.getId());

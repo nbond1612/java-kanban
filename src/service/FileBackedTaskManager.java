@@ -10,6 +10,7 @@ import java.io.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
+    private static final String FIRST_LINE = "id,type,name,status,description,epic;";
 
     public FileBackedTaskManager(File file) {
         this.file = file;
@@ -25,17 +26,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
         if (!epics.isEmpty()) {
             for (Epic task: epics.values()) {
-                tasksList.add(epicToString(task));
+                tasksList.add(taskToString(task));
             }
         }
         if (!subtasks.isEmpty()) {
             for (Subtask task: subtasks.values()) {
-                tasksList.add(subtaskToString(task));
+                tasksList.add(taskToString(task));
             }
         }
 
         try (FileWriter fw = new FileWriter(file)) {
-            fw.write("id,type,name,status,description,epic;");
+            fw.write(FIRST_LINE);
             for (String task: tasksList) {
                 fw.write(task);
             }
@@ -64,10 +65,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     Task task = stringToTask(taskString);
                     manager.tasks.put(task.getId(), task);
                 } else if (str[1].equals("EPIC")) {
-                    Epic epic = stringToEpic(taskString);
+                    Epic epic = stringToTask(taskString);
                     manager.epics.put(epic.getId(), epic);
                 } else {
-                    Subtask subtask = stringToSubtask(taskString);
+                    Subtask subtask = stringToTask(taskString);
                     manager.subtasks.put(subtask.getId(), subtask);
                 }
             }
@@ -82,31 +83,25 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return manager;
     }
 
-    private String taskToString(Task task) {
-        return task.getId() + "," + TaskType.TASK + "," + task.getName() + "," + task.getStatus() + "," + task.getDescription() + ";";
+    private <T extends Task> String taskToString(T task) {
+        String str = task.getId() + "," + task.getType() + "," + task.getName() + "," + task.getStatus() + "," + task.getDescription();
+        if (task.getType() == TaskType.SUBTASK) {
+            str += "," + task.getEpic();
+        }
+        str += ";";
+        return str;
     }
 
-    private String epicToString(Epic task) {
-        return task.getId() + "," + TaskType.EPIC + "," + task.getName() + "," + task.getStatus() + "," + task.getDescription() + ";";
-    }
-
-    private String subtaskToString(Subtask task) {
-        return task.getId() + "," + TaskType.SUBTASK + "," + task.getName() + "," + task.getStatus() + "," + task.getDescription() + "," + task.getEpic() + ";";
-    }
-
-    private static Task stringToTask(String text) {
+    @SuppressWarnings("unchecked")
+    private static <T extends Task> T stringToTask(String text) {
         String[] str = text.split(",");
-        return new Task(str[2], TaskStatus.valueOf(str[3]), str[4], Integer.parseInt(str[0]));
-    }
-
-    private static Epic stringToEpic(String text) {
-        String[] str = text.split(",");
-        return new Epic(str[2], TaskStatus.valueOf(str[3]), str[4], Integer.parseInt(str[0]));
-    }
-
-    private static Subtask stringToSubtask(String text) {
-        String[] str = text.split(",");
-        return new Subtask(str[2], TaskStatus.valueOf(str[3]), str[4], Integer.parseInt(str[5]), Integer.parseInt(str[0]));
+        if (TaskType.valueOf(str[1]) == TaskType.TASK) {
+            return (T)(new Task(str[2], TaskStatus.valueOf(str[3]), str[4], Integer.parseInt(str[0])));
+        } else if (TaskType.valueOf(str[1]) == TaskType.EPIC) {
+            return (T)(new Epic(str[2], TaskStatus.valueOf(str[3]), str[4], Integer.parseInt(str[0])));
+        } else {
+            return (T)(new Subtask(str[2], TaskStatus.valueOf(str[3]), str[4], Integer.parseInt(str[5]), Integer.parseInt(str[0])));
+        }
     }
 
     @Override

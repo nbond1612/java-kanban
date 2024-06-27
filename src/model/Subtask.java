@@ -14,6 +14,7 @@ public class Subtask extends Task {
         setId(id);
     }
 
+    @Override
     public int getEpic() {
         return epicId;
     }
@@ -22,6 +23,11 @@ public class Subtask extends Task {
         if (epicId != this.getId()) {
             this.epicId = epicId;
         }
+    }
+
+    @Override
+    public TaskType getType() {
+        return TaskType.SUBTASK;
     }
 
     @Override

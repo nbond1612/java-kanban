@@ -61,15 +61,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     lastId = Integer.parseInt(str[0]);
                 }
 
-                if (str[1].equals("TASK")) {
-                    Task task = stringToTask(taskString);
-                    manager.tasks.put(task.getId(), task);
-                } else if (str[1].equals("EPIC")) {
-                    Epic epic = stringToTask(taskString);
-                    manager.epics.put(epic.getId(), epic);
-                } else {
-                    Subtask subtask = stringToTask(taskString);
-                    manager.subtasks.put(subtask.getId(), subtask);
+                Task task = stringToTask(taskString);
+                switch (task.getType()) {
+                    case TaskType.TASK:
+                        manager.tasks.put(task.getId(), task);
+                        break;
+                    case TaskType.EPIC:
+                        manager.epics.put(task.getId(), (Epic)task);
+                        break;
+                    default:
+                        manager.subtasks.put(task.getId(), (Subtask)task);
                 }
             }
         }
@@ -95,13 +96,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     @SuppressWarnings("unchecked")
     private static <T extends Task> T stringToTask(String text) {
         String[] str = text.split(",");
-        if (TaskType.valueOf(str[1]) == TaskType.TASK) {
-            return (T)(new Task(str[2], TaskStatus.valueOf(str[3]), str[4], Integer.parseInt(str[0])));
-        } else if (TaskType.valueOf(str[1]) == TaskType.EPIC) {
-            return (T)(new Epic(str[2], TaskStatus.valueOf(str[3]), str[4], Integer.parseInt(str[0])));
-        } else {
-            return (T)(new Subtask(str[2], TaskStatus.valueOf(str[3]), str[4], Integer.parseInt(str[5]), Integer.parseInt(str[0])));
-        }
+        final TaskType type = TaskType.valueOf(str[1]);
+        return switch (type) {
+            case TaskType.TASK -> (T)(new Task(str[2], TaskStatus.valueOf(str[3]), str[4], Integer.parseInt(str[0])));
+            case TaskType.EPIC -> (T)(new Epic(str[2], TaskStatus.valueOf(str[3]), str[4], Integer.parseInt(str[0])));
+            default -> (T)(new Subtask(str[2], TaskStatus.valueOf(str[3]), str[4], Integer.parseInt(str[5]), Integer.parseInt(str[0])));
+        };
     }
 
     @Override

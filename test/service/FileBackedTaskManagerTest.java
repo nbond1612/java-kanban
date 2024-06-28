@@ -21,6 +21,7 @@ public class FileBackedTaskManagerTest {
         manager = new FileBackedTaskManager(file);
     }
 
+    @DisplayName("FileBackedTaskManager работает для пустого файла")
     @Test
     public void shouldWorkForEmptyFile() throws IOException {
         FileBackedTaskManager f = FileBackedTaskManager.loadFromFile(file);
@@ -32,6 +33,7 @@ public class FileBackedTaskManagerTest {
         assertEquals(0, totalSize, "Из пустого файла зкземпляр класса FileBackedTaskManager создается не пустым.");
     }
 
+    @DisplayName("FileBackedTaskManager успешно сохраняет и загружает несколько задач разных типов")
     @Test
     public void shouldSaveAndLoadMultipleTasks() throws IOException {
         Task task = new Task("Task", TaskStatus.NEW, "Task description");
